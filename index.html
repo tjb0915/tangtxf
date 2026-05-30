@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang='zh-Hant'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'>
+<meta name='apple-mobile-web-app-capable' content='yes'>
+<meta name='format-detection' content='telephone=no'>
+<title>期貨操作系統 WEB 日夜盤雙撐壓對照</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07111f;color:#e5e7eb;font-family:Arial,'Microsoft JhengHei','Noto Sans TC',sans-serif;-webkit-text-size-adjust:100%}
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#07111f,rgba(7,17,31,.96));border-bottom:1px solid rgba(148,163,184,.25);padding:14px 16px 12px;backdrop-filter:blur(10px)}
+.brand{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.logo{font-size:22px;font-weight:900;letter-spacing:.5px;background:linear-gradient(90deg,#38bdf8,#facc15,#fb7185);-webkit-background-clip:text;color:transparent}
+.time{font-size:12px;color:#94a3b8;text-align:right;line-height:1.5}
+.sub{margin-top:6px;font-size:13px;color:#cbd5e1}
+.app{max-width:1260px;margin:0 auto;padding:12px 14px 22px}
+.tabs{display:flex;gap:10px;margin:10px 0}
+.tab{border:1px solid rgba(148,163,184,.25);background:#0f172a;color:#cbd5e1;border-radius:999px;padding:10px 24px;font-size:16px;font-weight:900;cursor:pointer}
+.tab.active{background:#facc15;color:#111827;border-color:#facc15;box-shadow:0 0 18px rgba(250,204,21,.28)}
+.card{background:linear-gradient(180deg,rgba(15,23,42,.96),rgba(15,23,42,.84));border:1px solid rgba(148,163,184,.22);border-radius:22px;padding:14px;box-shadow:0 18px 48px rgba(0,0,0,.35);margin-top:12px}
+.shareArea .card{margin-top:0}
+.cardHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.card h2{margin:0;font-size:22px;color:#f8fafc;font-weight:900}
+.small{font-size:12px;color:#94a3b8}
+.quoteWrap{overflow:auto}
+.quoteTable{min-width:980px;width:100%;border-collapse:collapse;font-size:13px}
+.quoteTable th,.quoteTable td{border-bottom:1px solid rgba(148,163,184,.16);padding:7px 8px;text-align:right;white-space:nowrap}
+.quoteTable th:first-child,.quoteTable td:first-child{text-align:left}
+.quoteTable th{color:#94a3b8;background:rgba(2,6,23,.45)}
+.quoteTable td{color:#e5e7eb}
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.box{background:#0f172a;border:1px solid rgba(148,163,184,.18);border-radius:16px;padding:10px 12px;min-height:72px}
+.lab{font-size:12px;color:#94a3b8;margin-bottom:6px}
+.val{font-size:22px;font-weight:900;color:#f8fafc;word-break:break-all}
+.cur .val{color:#facc15;font-size:25px}
+.high .val{color:#ef4444}
+.low .val{color:#22c55e}
+.bias .val{color:#38bdf8}
+.shareArea{margin-top:12px}
+.mainGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px;align-items:start}
+.levelLegend{display:grid;grid-template-columns:1fr 1fr;gap:8px;color:#94a3b8;font-size:14px;font-weight:900;margin-bottom:8px}
+.levelBoard{position:relative;height:980px;border-radius:18px;background:radial-gradient(circle at top,#172554 0%,#020617 60%);border:1px solid rgba(148,163,184,.22);overflow:hidden}
+.axisLine{position:absolute;left:50%;top:0;bottom:0;border-left:1px solid rgba(148,163,184,.22)}
+.guide{position:absolute;left:10px;right:10px;border-top:1px dashed rgba(148,163,184,.18);height:1px}
+.levelItem{position:absolute;width:49.4%;display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:12px;padding:8px 14px;background:rgba(15,23,42,.90);border:1px solid rgba(148,163,184,.28);box-shadow:0 10px 22px rgba(0,0,0,.24);font-size:21px;min-height:40px;z-index:2}
+.levelItem.left{left:3px}
+.levelItem.right{right:3px;color:#fff;background:rgba(30,41,59,.80)}
+.levelLink{position:absolute;height:1px;background:rgba(255,255,255,.22);z-index:1}
+.levelLink.left{left:49.4%;width:4px}
+.levelLink.right{right:49.4%;width:4px}
+.levelName{font-weight:900;white-space:nowrap;letter-spacing:.3px}
+.levelValue{font-weight:900;white-space:nowrap;font-size:1.05em}
+.pivot{color:#facc15!important}
+.r3{background:#ec4899!important;color:#1f2937!important}
+.r5{background:#dc2626!important;color:#fff!important}
+.s3{background:#86efac!important;color:#14532d!important}
+.s5{background:#16a34a!important;color:#fff!important}
+#scriptBox{display:grid;grid-template-columns:1fr;gap:6px}
+.scriptMini{background:#020617;border:1px solid rgba(148,163,184,.18);border-radius:12px;padding:8px 10px}
+.scriptMiniLine{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.scriptMiniKey{color:#94a3b8;font-weight:900}
+.scriptMiniVal{color:#e5e7eb;font-weight:800;flex:1;min-width:180px}
+.scriptCard{background:#020617;border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:8px 10px}
+.scriptTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.scriptTag{font-size:18px;font-weight:900;line-height:1.1}
+.scriptPoint{font-size:16px;font-weight:900;line-height:1.1}
+.scriptLine{display:flex;gap:10px;align-items:flex-start;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.14);flex-wrap:wrap}
+.scriptDescKey{font-weight:900;color:#94a3b8;min-width:86px}
+.scriptDescVal{font-weight:800;color:#e5e7eb;flex:1;min-width:120px;word-break:break-word}
+.scriptCard.r3{background:#ec4899;color:#1f2937;border-color:#f472b6}
+.scriptCard.r3 .scriptTag,.scriptCard.r3 .scriptPoint,.scriptCard.r3 .scriptDescKey,.scriptCard.r3 .scriptDescVal{color:#1f2937}
+.scriptCard.r5{background:#dc2626;color:#fff;border-color:#ef4444}
+.scriptCard.r5 .scriptTag,.scriptCard.r5 .scriptPoint,.scriptCard.r5 .scriptDescKey,.scriptCard.r5 .scriptDescVal{color:#fff}
+.scriptCard.s3{background:#86efac;color:#14532d;border-color:#bbf7d0}
+.scriptCard.s3 .scriptTag,.scriptCard.s3 .scriptPoint,.scriptCard.s3 .scriptDescKey,.scriptCard.s3 .scriptDescVal{color:#14532d}
+.scriptCard.s5{background:#16a34a;color:#fff;border-color:#22c55e}
+.scriptCard.s5 .scriptTag,.scriptCard.s5 .scriptPoint,.scriptCard.s5 .scriptDescKey,.scriptCard.s5 .scriptDescVal{color:#fff}
+.scriptCard.pivot .scriptTag,.scriptCard.pivot .scriptPoint{color:#facc15}
+.btnRow{display:flex;flex-wrap:wrap;gap:8px}
+.btnRow button{border:0;border-radius:12px;padding:8px 12px;background:#1d4ed8;color:white;font-weight:900;cursor:pointer}
+.shotNote{margin-top:8px}
+.statusGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.status{background:#111827;border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:9px}
+.status b{display:block;color:#facc15;margin-bottom:4px}
+.status span{font-size:12px;color:#cbd5e1;line-height:1.45}
+.footer{margin-top:14px;font-size:12px;color:#64748b;text-align:center}
+@media(max-width:960px){.mainGrid{grid-template-columns:1fr}.kpi{grid-template-columns:repeat(2,1fr)}.statusGrid{grid-template-columns:1fr}.levelBoard{height:980px}.app{padding:10px}.card{border-radius:18px;padding:12px}.logo{font-size:19px}.levelItem{font-size:20px;width:49.4%;padding:8px 10px}.levelLegend{font-size:17px;gap:4px}.scriptDescKey{min-width:72px}}
+@media(max-width:430px){.brand{align-items:flex-start}.kpi{grid-template-columns:repeat(2,1fr)}.val{font-size:19px}.cur .val{font-size:22px}.tab{padding:9px 18px}.levelBoard{height:940px}.scriptDescKey{min-width:100%;margin-bottom:2px}.scriptMiniLine{display:block}.scriptMiniVal{display:block;margin-top:4px;min-width:0}}
+</style>
+
+</head>
+<body>
+<div class='top'><div class='brand'><div><div class='logo'>Tang 期貨操作系統 WEB</div><div class='sub'>日夜盤分頁｜雙撐壓點位對照｜Telegram / DDE / HTML 狀態｜iPhone Safari 友善版</div></div><div class='time' id='nowBox'></div></div></div>
+<main class='app'>
+<section class='tabs'><button class='tab active' data-tab='day'>日盤</button><button class='tab' data-tab='night'>夜盤</button></section>
+<section class='card'><div class='cardHead'><h2 id='marketTitle'>期貨行情表</h2><span class='small' id='marketNote'></span></div><div class='quoteWrap' id='quoteWrap'></div></section>
+<section class='card'><div class='cardHead'><h2>即時資訊</h2><span class='small' id='sourceNote'></span></div><div class='kpi' id='kpiWrap'></div></section>
+<div id='shareArea' class='shareArea'><div class='mainGrid'>
+<section class='card' id='levelCaptureArea'><div class='cardHead'><h2 id='levelTitle'>雙撐壓點位對照｜日盤</h2><span class='small'>左：日/夜盤｜右：全日，依點位高低錯開</span></div><div class='levelLegend'><span>日/夜盤撐壓 S8~R8</span><span>全日撐壓 S3~R3</span></div><div class='levelBoard' id='levelBoard'></div></section>
+<section class='card'><div class='cardHead'><h2>當沖操作劇本</h2><span class='small'>讀取期貨操作系統 Dashboard</span></div><div id='scriptBox'></div></section>
+</div></div>
+<section class='card'><div class='cardHead'><h2>Telegram / 轉傳工具</h2><span class='small'>截圖只擷取左半部雙撐壓，手機直式比例</span></div><div class='btnRow'><button type='button'>啟動監控</button><button type='button'>停止監控</button><button type='button'>測試推播</button><button type='button'>手動發文</button><button type='button' onclick='captureLevelArea()'>截圖匯出</button></div><div class='small shotNote'>只輸出雙撐壓點位對照 PNG，方便手機轉傳。</div><div class='statusGrid' id='statusGrid'></div></section>
+<div class='footer'>本頁由 Excel VBA 一鍵輸出。資料請以 Excel 內 Dashboard / DDE / DATA 更新後為準。</div>
+</main>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'></script>
+<script>
+const RT_WEB_DATA={
+day:{session:'日盤',quoteTitle:'昨天夜盤資訊',source:'Dashboard_日盤',updated:'2026/05/29 22:29:32',kpi:{open:'44655',high:'45471',low:'44655',cur:'45,285',bias:'偏多'},mainLevels:[{name:'R8',label:'壓力8',value:47053.946},{name:'R7',label:'壓力7',value:46456.946},{name:'R6',label:'壓力6',value:45859.946},{name:'R5',label:'壓力5',value:45491},{name:'R4',label:'壓力4',value:45315.5},{name:'R3',label:'壓力3',value:45140},{name:'R2',label:'壓力2',value:44791.1864},{name:'R1',label:'壓力1',value:44696.3864},{name:'多空點',label:'多空點  /  44,543',value:44543},{name:'S1',label:'支撐1',value:44389.6136},{name:'S2',label:'支撐2',value:44294.8136},{name:'S3',label:'支撐3',value:44192},{name:'S4',label:'支撐4',value:43893.5},{name:'S5',label:'支撐5',value:43595},{name:'S6',label:'支撐6',value:43378.082},{name:'S7',label:'支撐7',value:43027.082},{name:'S8',label:'支撐8',value:42676.082}],allLevels:[{name:'全R3',label:'全R3',value:46260.3333333333},{name:'全R2',label:'全R2',value:45741.8333333333},{name:'全R1',label:'全R1',value:45238.5833333333},{name:'全多空點',label:'全多空點',value:44735.3333333333},{name:'全S1',label:'全S1',value:44232.0833333333},{name:'全S2',label:'全S2',value:43728.8333333333},{name:'全S3',label:'全S3',value:43210.3333333333}],quotes:[{k:'股號',v:'*TXM6'},{k:'名稱',v:'台指06全'},{k:'最高',v:'45592'},{k:'最低',v:'45050'},{k:'成交',v:'45130'},{k:'幅度%',v:'-0.41'},{k:'振幅',v:'1.20'},{k:'日期',v:'2026-05-29'},{k:'成交量',v:'31448'},{k:'昨量',v:'--'},{k:'開盤',v:'45363'},{k:'結算',v:'45315'},{k:'均價',v:'45366.87'},{k:'漲跌',v:'▼185.00'},{k:'單量',v:'1'},{k:'時間',v:'22:29:29'}],script:[{k:'一眼方向盤',v:''},{k:'關鍵價位與動作',v:''},{k:'現價',v:'45285'},{k:'開盤',v:'44655'},{k:'R5',v:'45491'},{k:'極端壓力',v:'到價先減碼/觀察爆量'},{k:'今日高',v:'45471'},{k:'今日低',v:'44655'},{k:'R3',v:'--'},{k:'高點壓力',v:'強勢突破才續攻'},{k:'多空點',v:'44543'},{k:'距離',v:'816'},{k:'R2',v:'44791'},{k:'強勢突破區',v:'站穩偏多，不穩防假突破'},{k:'主方向',v:'強多'},{k:'燈號',v:'紅燈續攻'},{k:'R1',v:'44696'},{k:'第一壓力',v:'突破帶量才追'},{k:'開盤原則',v:'現價在開盤上方，偏多'},{k:'P',v:'44543'},{k:'多空點',v:'上方偏多，下方偏空'},{k:'壓支判斷',v:'突破R2 強勢'},{k:'S1',v:'44390'},{k:'第一支撐',v:'回測不破可觀察多方'},{k:'假突破警示',v:'暫無明顯假突破'},{k:'S2',v:'44295'},{k:'轉弱支撐',v:'跌破偏空/停損線'},{k:'當沖劇本',v:'續抱/回測R2不破偏多；下一關看R3'},{k:'S3',v:'44192'},{k:'反彈警戒',v:'急跌近S3防反彈'},{k:'Red Team檢查',v:'追高要看量能，不可只看突破'},{k:'S5',v:'43595'},{k:'極端支撐',v:'跌破容易加速'},{k:'回測偏多策略',v:''},{k:'強勢續攻策略',v:''},{k:'回測P或R1附近，量縮不破支撐才是買點。現價=45285.\n重點：不要追高，等回測確認。',v:''},{k:'開盤後站上R1/R2，且量能放大，才走續攻。\n目標先看R3，跌回R2下方防假突破。',v:''},{k:'區間盤整策略',v:''},{k:'高檔 空方 反轉策略',v:''},{k:'價格在P附近或R1~S1之間，容易洗盤。\n策略：等突破方向，不在中間追單。',v:''},{k:'高檔爆量不過R2/R3，或跌回R1下方，要防出貨。\n策略：假突破賣出、嚴設停損。',v:''}],status:[{k:'DDE',v:'DDE：讀取中'},{k:'HTML',v:'HTML：已輸出'},{k:'Telegram',v:'Telegram：設定表已讀取｜掃描 10. 秒｜接近 0.5 點'}]},
+night:{session:'夜盤',quoteTitle:'當天日盤資訊',source:'Dashboard_夜盤',updated:'2026/05/29 22:29:32',kpi:{open:'45363',high:'45592',low:'45050',cur:'45,130',bias:'偏空'},mainLevels:[{name:'R8',label:'壓力8',value:47214.876},{name:'R7',label:'壓力7',value:46732.876},{name:'R6',label:'壓力6',value:46250.876},{name:'R5',label:'壓力5',value:45953},{name:'R4',label:'壓力4',value:45786},{name:'R3',label:'壓力3',value:45619},{name:'R2',label:'壓力2',value:45350.6288},{name:'R1',label:'壓力1',value:45269.0288},{name:'多空點',label:'多空點  /  45,137',value:45137},{name:'S1',label:'支撐1',value:45004.9712},{name:'S2',label:'支撐2',value:44923.3712},{name:'S3',label:'支撐3',value:44803},{name:'S4',label:'支撐4',value:44562},{name:'S5',label:'支撐5',value:44321},{name:'S6',label:'支撐6',value:44114.588},{name:'S7',label:'支撐7',value:43780.588},{name:'S8',label:'支撐8',value:43446.588}],allLevels:[{name:'全R3',label:'全R3',value:46425.6666666667},{name:'全R2',label:'全R2',value:45907.1666666667},{name:'全R1',label:'全R1',value:45403.9166666667},{name:'全多空點',label:'全多空點',value:44900.6666666667},{name:'全S1',label:'全S1',value:44397.4166666667},{name:'全S2',label:'全S2',value:43894.1666666667},{name:'全S3',label:'全S3',value:43375.6666666667}],quotes:[{k:'股號',v:'TXM6'},{k:'名稱',v:'台指06'},{k:'最高',v:'45471'},{k:'最低',v:'44655'},{k:'成交',v:'45285'},{k:'幅度%',v:'+3.30'},{k:'振幅',v:'1.86'},{k:'日期',v:'2026-05-29'},{k:'成交量',v:'66284'},{k:'昨量',v:'--'},{k:'開盤',v:'44655'},{k:'結算',v:'45315'},{k:'均價',v:'45109.33'},{k:'漲跌',v:'▲1446.00'},{k:'單量',v:'4'},{k:'時間',v:'13:44:59'}],script:[{k:'2026/5/29 當沖操作劇本',v:''},{k:'關鍵價：P 45137.｜R1 45269.03｜R2 45350.63｜S1 45004.97｜S2 44923.37',v:''},{k:'一眼方向盤',v:''},{k:'關鍵價位與動作',v:''},{k:'現價',v:'45130'},{k:'開盤',v:'45363'},{k:'R5',v:'45953'},{k:'極端壓力',v:'到價先減碼/觀察爆量'},{k:'今日高',v:'45592'},{k:'今日低',v:'45050'},{k:'R3',v:'45619'},{k:'高點壓力',v:'強勢突破才續攻'},{k:'多空點',v:'45137'},{k:'距離',v:'542'},{k:'R2',v:'45351'},{k:'強勢突破區',v:'站穩偏多，不穩防假突破'},{k:'主方向',v:'偏空'},{k:'燈號',v:'橘燈偏空'},{k:'R1',v:'45269'},{k:'第一壓力',v:'突破帶量才追'},{k:'開盤原則',v:'現價在開盤下方，偏空'},{k:'P',v:'45137'},{k:'多空點',v:'上方偏多，下方偏空'},{k:'壓支判斷',v:'多空點附近震盪'},{k:'S1',v:'45005'},{k:'第一支撐',v:'回測不破可觀察多方'},{k:'假突破警示',v:'暫無明顯假突破'},{k:'S2',v:'44923'},{k:'轉弱支撐',v:'跌破偏空/停損線'},{k:'當沖劇本',v:'反彈多空點不過偏空'},{k:'S3',v:'44803'},{k:'反彈警戒',v:'急跌近S3防反彈'},{k:'Red Team檢查',v:'離多空點太近，訊號容易洗'},{k:'S5',v:'44321'},{k:'極端支撐',v:'跌破容易加速'},{k:'回測偏多策略',v:''},{k:'強勢續攻策略',v:''},{k:'回測P或R1附近，量縮不破支撐才是買點。現價=45130.\n重點：不要追高，等回測確認。',v:''},{k:'開盤後站上R1/R2，且量能放大，才走續攻。\n目標先看R3，跌回R2下方防假突破。',v:''}],status:[{k:'DDE',v:'DDE：讀取中'},{k:'HTML',v:'HTML：已輸出'},{k:'Telegram',v:'Telegram：設定表已讀取｜掃描 10. 秒｜接近 0.5 點'}]}
+};
+let current='day';
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+function fmt(v){if(v===null||v===undefined||v==='')return '--';let n=Number(String(v).replace(/,/g,''));if(!isNaN(n))return Math.round(n).toLocaleString('zh-TW');return esc(v);}
+function isLevelKey(k){k=String(k||'').trim();return /^(R[1-8]|S[1-8]|P|多空點|全R[1-3]|全S[1-3]|日夜多空點)$/u.test(k);}
+function clsLevel(x,side){let n=String(x.name||'');if(n.indexOf('多空')>=0)return 'pivot';if(side==='left'){if(n==='R3')return 'r3';if(n==='R5')return 'r5';if(n==='S3')return 's3';if(n==='S5')return 's5';}return '';}
+function clsScript(k){k=String(k||'');if(k.indexOf('多空')>=0||k==='P')return 'pivot';if(k==='R3')return 'r3';if(k==='R5')return 'r5';if(k==='S3')return 's3';if(k==='S5')return 's5';return '';}
+function render(){const d=RT_WEB_DATA[current];$('nowBox').innerHTML='盤別：'+d.session+'<br>輸出：'+d.updated+'<br>瀏覽：<span id="viewCount">--</span>';document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===current));$('marketTitle').textContent='期貨行情表｜'+d.quoteTitle;$('levelTitle').textContent='雙撐壓點位對照｜'+d.session;$('marketNote').textContent=d.session==='日盤'?'日盤頁顯示昨天夜盤資訊':'夜盤頁顯示當天日盤資訊';$('sourceNote').textContent='資料來源：'+d.source;renderQuote(d);renderKpi(d);renderLevels(d);renderScript(d);renderStatus(d);}
+function renderQuote(d){let h='<table class=quoteTable><thead><tr>';d.quotes.forEach(x=>h+='<th>'+esc(x.k)+'</th>');h+='</tr></thead><tbody><tr>';d.quotes.forEach(x=>h+='<td>'+esc(x.v||'--')+'</td>');h+='</tr></tbody></table>';$('quoteWrap').innerHTML=h;}
+function renderKpi(d){const k=d.kpi;const items=[['開盤',k.open,''],['最高',k.high,'high'],['最低',k.low,'low'],['現價',k.cur,'cur'],['盤勢',k.bias,'bias']];$('kpiWrap').innerHTML=items.map(x=>`<div class='box ${x[2]}'><div class='lab'>${x[0]}</div><div class='val'>${esc(x[1]||'--')}</div></div>`).join('');}
+function renderLevels(d){
+const board=$('levelBoard');board.innerHTML='<div class=axisLine></div>';
+const left=d.mainLevels.filter(x=>!isNaN(Number(x.value))).map(x=>({name:x.name,value:Number(x.value),cls:clsLevel(x,'left'),side:'left'}));
+const right=d.allLevels.filter(x=>!isNaN(Number(x.value))).map(x=>({name:x.name,value:Number(x.value),cls:clsLevel(x,'right'),side:'right'}));
+const merged=[...left,...right].sort((a,b)=>Number(b.value)-Number(a.value));
+if(merged.length===0){board.textContent='撐壓資料不足';return;}
+const topPad=18,bottomPad=24,itemH=42,gap=8;
+const needH=topPad+bottomPad+merged.length*itemH+Math.max(0,merged.length-1)*gap;
+board.style.height=Math.max(board.clientHeight,needH)+'px';
+merged.forEach(function(x,i){x.top=topPad+i*(itemH+gap);});
+merged.forEach(function(x){let g=document.createElement('div');g.className='guide';g.style.top=(x.top+itemH/2)+'px';board.appendChild(g);});
+merged.forEach(function(x){let el=document.createElement('div');el.className='levelItem ' + x.side + ' ' + x.cls;el.style.top=x.top+'px';el.innerHTML=`<span class='levelName'>${esc(x.name)}</span><span class='levelValue'>${fmt(x.value)}</span>`;board.appendChild(el);});
+}
+function buildScriptBlocks(rows){let out=[];for(let i=0;i<rows.length;i++){let k=String(rows[i].k||'').trim(),v=String(rows[i].v||'').trim();if(!k&&!v)continue;if(isLevelKey(k)){let b={type:'level',key:k,value:v,descKey:'',descVal:''};if(i+1<rows.length){let nk=String(rows[i+1].k||'').trim(),nv=String(rows[i+1].v||'').trim();if(!isLevelKey(nk)){b.descKey=nk;b.descVal=nv;i++;}}out.push(b);}else{out.push({type:'row',key:k,value:v});}}return out;}
+function renderScript(d){
+let rows=(d.script||[]).filter(x=>String((x.k||'')+(x.v||'')).trim()!=='');
+if(rows.length===0){$('scriptBox').innerHTML='<div class=small>尚未讀到當沖操作劇本資料</div>';return;}
+let blocks=buildScriptBlocks(rows);let html='';
+blocks.forEach(function(b){
+if(b.type==='level'){let c=clsScript(b.key);
+html+=`<div class='scriptCard ${c}'><div class='scriptTop'><span class='scriptTag'>${esc(b.key)}</span><span class='scriptPoint'>${esc(b.value||'--')}</span></div>`;
+if(b.descKey||b.descVal){html+=`<div class='scriptLine'><span class='scriptDescKey'>${esc(b.descKey||'說明')}</span><span class='scriptDescVal'>${esc(b.descVal||'')}</span></div>`;}
+html+='</div>';
+}else{let text=(b.key&&b.value)?(b.key+'：'+b.value):(b.key||b.value||'');
+html+=`<div class='scriptMini'><div class='scriptMiniLine'><span class='scriptMiniVal'>${esc(text)}</span></div></div>`;}});
+$('scriptBox').innerHTML=html;}
+function renderStatus(d){$('statusGrid').innerHTML=(d.status||[]).map(x=>`<div class='status'><b>${esc(x.k)}</b><span>${esc(x.v)}</span></div>`).join('');}
+function captureLevelArea(){
+const target=document.getElementById('levelCaptureArea');
+if(typeof html2canvas==='undefined'){
+alert('截圖功能載入失敗，請確認網路後重試。');return;
+}
+html2canvas(target,{backgroundColor:'#07111f',scale:2,useCORS:true,scrollY:-window.scrollY}).then(function(srcCanvas){
+const outW=1080;
+const outH=1920;
+const out=document.createElement('canvas');
+out.width=outW;out.height=outH;
+const ctx=out.getContext('2d');
+ctx.fillStyle='#07111f';ctx.fillRect(0,0,outW,outH);
+const padX=60;
+const padY=90;
+const maxW=outW-padX*2;
+const maxH=outH-padY*2;
+const scale=Math.min(maxW/srcCanvas.width,maxH/srcCanvas.height);
+const drawW=srcCanvas.width*scale;
+const drawH=srcCanvas.height*scale;
+const x=(outW-drawW)/2;
+const y=(outH-drawH)/2;
+ctx.drawImage(srcCanvas,x,y,drawW,drawH);
+let a=document.createElement('a');
+let now=new Date();
+let pad=n=>String(n).padStart(2,'0');
+let sessionName=(current==='day'?'日盤':'夜盤');let name='期貨操作系統_WEB_雙撐壓點位對照_'+sessionName+'_手機版_'+now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+'_'+pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds())+'.png';
+a.href=out.toDataURL('image/png');
+a.download=name;
+a.click();
+}).catch(function(err){
+alert('截圖失敗：'+err);
+});
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{current=b.dataset.tab;render();}));
+window.addEventListener('resize',()=>renderLevels(RT_WEB_DATA[current]));
+function loadViewCount(){
+let el=document.getElementById('viewCount');
+if(!el)return;
+fetch('/.netlify/functions/rt-view-counter?path='+encodeURIComponent(location.pathname),{cache:'no-store'})
+.then(r=>r.json()).then(j=>{el.textContent=j.views||'--';})
+.catch(()=>{el.textContent='--';});
+}
+window.captureLevelArea=captureLevelArea;
+render();
+loadViewCount();
+
+</script>
+</body></html>
